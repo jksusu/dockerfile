@@ -8,13 +8,12 @@ LABEL maintainer="jksusu" version="1.0" license="MIT"
 ENV SWOOLE_VERSION=4.2.11 \
      MSGPACK=2.1.1 \
      YAR=2.0.5 \
-    #  install and remove building packages
-     PHPIZE_DEPS=" curl-dev autoconf dpkg-dev dpkg file g++ gcc libc-dev make php7-dev php7-pear pkgconf re2c pcre-dev zlib-dev libtool automake" \
-    # update
+     PHPIZE_DEPS=" curl-dev autoconf dpkg-dev dpkg file g++ gcc libc-dev make php7-dev php7-pear pkgconf re2c pcre-dev zlib-dev libtool automake"
+
 RUN set -ex \
         && apk update \
         && apk add --no-cache libstdc++ openssl  bash \
-        && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libaio-dev openssl-dev \
+        && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} libaio-dev openssl-dev \
         && cd /tmp \
         && curl -SL "https://github.com/swoole/swoole-src/archive/v${SWOOLE_VERSION}.tar.gz" -o swoole.tar.gz \
         && ls -alh \
@@ -29,7 +28,6 @@ RUN set -ex \
         ) \
         && echo "extension=swoole.so" > /etc/php7/conf.d/swoole.ini \
         && php --ri swoole \
-
         && cd /tmp \
         && curl -SL "https://codeload.github.com/msgpack/msgpack-php/tar.gz/msgpack-${MSGPACK}" -o msgpack.tar.gz \
         && ls -alh \
@@ -44,7 +42,6 @@ RUN set -ex \
         ) \
         && echo "extension=msgpack.so" > /etc/php7/conf.d/msgpack.ini \
         && php --ri msgpack \
-
         && cd /tmp \
         && curl -SL "https://codeload.github.com/laruence/yar/tar.gz/yar-${YAR}" -o yar.tar.gz \
         && ls -alh \
@@ -59,7 +56,7 @@ RUN set -ex \
         ) \
         && echo "extension=yar.so" > /etc/php7/conf.d/yar.ini \
         && php --ri yar \
-
+        && php -m \
         && apk del .build-deps \
         && rm -rf /var/cache/apk/* /tmp/* /usr/share/man \
         && echo -e "\033[42;37m Build Completed :).\033[0m\n"
